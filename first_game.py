@@ -1,9 +1,11 @@
 import pygame  
-pygame.init()                                   #initializes pygame
+pygame.init()                                                 #initializes pygame
 
-win = pygame.display.set_mode((500, 500))       #creates a display window or screen 
+screen_width, screen_height = 500, 500
 
-pygame.display.set_caption("First Game")        #sets the caption of the window 
+win = pygame.display.set_mode((screen_width, screen_height))  #creates a display window or screen 
+
+pygame.display.set_caption("First Game")                      #sets the caption of the window 
 
 x=50        #character's x position
 y=50        #character's y position
@@ -20,20 +22,16 @@ while run:
         if event.type==pygame.QUIT:     #such as mouse position moved, key presses, mouse clicks, etc.
             run=False
     
-    keys = pygame.key.get_pressed()     #listens for key presses
-    if keys[pygame.K_LEFT]:             #left key press decreases x position by vel
-        if x-vel>0:
-            x-=vel
-    if keys[pygame.K_RIGHT]:            #right key press increases x position by vel
-        if x+vel<(500-width):           #prevents rectangle from moving out of screen
-            x+=vel
-    if keys[pygame.K_UP]:               #up key press decreases y position by vel
-        if y-vel>0:
-            y-=vel
-    if keys[pygame.K_DOWN]:             #down key press increases y position by vel
-        if y+vel<(500-height):          #prevents rectangle from moving out of screen
-            y+=vel
-    
+    keys = pygame.key.get_pressed()                         #listens for key presses
+    if keys[pygame.K_LEFT] and x>vel:                       #left key press decreases x position by vel
+        x-=vel
+    if keys[pygame.K_RIGHT] and x<screen_width-width-vel:   #right key press increases x position by vel and
+        x+=vel                                              #prevents rectangle from moving out of screen     
+    if keys[pygame.K_UP] and x<vel:                         #up key press decreases y position by vel
+        y-=vel
+    if keys[pygame.K_DOWN] and y<screen_height-height-vel:  #down key press increases y position by vel and
+        y+=vel                                              #prevents rectangle from moving out of screen
+            
     #fills the screen by black color to match the background so that 
     #as new rectangle is drawn, old ones are hidden
     win.fill((0,0,0))
