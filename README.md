@@ -18,3 +18,5 @@ pip freeze > requirements.txt
 (This allows others to create a virtual environment and installing dependencies by running:
 pip install -r requirements.txt)
 
+Next steps: in the comments of each file
+
