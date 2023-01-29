@@ -33,39 +33,40 @@ bg = pygame.image.load('assets/bg.jpg')
 
 char = pygame.image.load('assets/standing.png')
 
-
-x=50            #character's x position
-y=400           #character's y position
-width=64        #character's width
-height=64       #character's height
-vel=5           #how fast the character moves
-is_jump=False   #is the character jumping or not
-jump_count=10   
-left=False      #is the character is moving or not and in which direction. So display pic can be changed acc.
-right=False     # "
-walk_count=0    # how many steps has the character already moved
+class Player:
+    def __init__(self, x, y, width, height):
+        self.x=x             #character's x position
+        self.y=y             #character's y position
+        self.width=width     #character's width
+        self.height=height   #character's height
+        self.vel=5           #how fast the character moves
+        self.is_jump=False   #is the character jumping or not
+        self.jump_count=10   
+        self.left=False      #is the character is moving or not and in which direction. So display pic can be changed acc.
+        self.right=False     # "
+        self.walk_count=0    # how many steps has the character already moved
+    
+    def draw(self, win):
+        #animates the character:
+        if self.walk_count+1>=27:
+            self.walk_count=0
+        
+        if self.left:
+            win.blit(walk_left[self.walk_count//3],(self.x,self.y))
+            self.walk_count+=1
+        elif self.right:
+            win.blit(walk_right[self.walk_count//3],(self.x,self.y))
+            self.walk_count+=1
+        else:
+            win.blit(char, (self.x,self.y))
 
 def redraw_game_window():
-    global walk_count
-
     win.blit(bg,(0,0)) #sets a background image. args: 1. pic name, 2. tuple with position coordinates
-   
-    #animates the character:
-    if walk_count+1>=27:
-        walk_count=0
-    
-    if left:
-        win.blit(walk_left[walk_count//3],(x,y))
-        walk_count+=1
-    elif right:
-        win.blit(walk_right[walk_count//3],(x,y))
-        walk_count+=1
-    else:
-        win.blit(char, (x,y))
-    
+    player.draw(win)
     pygame.display.update()
 
 #main loop: we use main loop to check for events etc.
+player=Player(x=300, y=410, width=64, height=64)
 run = True
 while run:
     #pygame.time.delay(100)              #100 ms=0.1 sec delay, so nothing happens too quickly
@@ -76,19 +77,20 @@ while run:
             run=False
     
     keys = pygame.key.get_pressed()                             #listens for key presses
-    if keys[pygame.K_LEFT] and x>vel:                           #left key press decreases x position by vel
-        x-=vel
-        left=True
-        right=False
-    elif keys[pygame.K_RIGHT] and x<screen_width-width-vel:       #right key press increases x position by vel and
-        x+=vel  
-        right=True
-        left=False    
+    if keys[pygame.K_LEFT] and player.x>player.vel:                    #left key press decreases x position by vel
+        player.x-=player.vel
+        player.left=True
+        player.right=False
+    elif keys[pygame.K_RIGHT] and player.x<screen_width-player.width-player.vel:       
+    #right key press increases x position by vel and
+        player.x+=player.vel  
+        player.right=True
+        player.left=False    
     else:
-        left=False
-        right=False
-        walk_count=0                                            #prevents rectangle from moving out of screen     
-    if not is_jump:
+        player.left=False
+        player.right=False
+        player.walk_count=0                                            #prevents rectangle from moving out of screen     
+    if not player.is_jump:
         #As per game design, getting rid of the character's ability to move up and down, except to jump:
 
         # if keys[pygame.K_UP] and y>vel:                         #up key press decreases y position by vel
@@ -96,20 +98,20 @@ while run:
         # if keys[pygame.K_DOWN] and y<screen_height-height-vel:  #down key press increases y position by vel and
         #     y+=vel  
         if keys[pygame.K_SPACE]:
-            is_jump = True
-            left=False
-            right=False
-            walk_count=0
+            player.is_jump = True
+            player.left=False
+            player.right=False
+            player.walk_count=0
     else:
-        if jump_count>=-10:
+        if player.jump_count>=-10:
             neg = 1
-            if jump_count < 0:
+            if player.jump_count < 0:
                 neg = -1
-            y -= (jump_count ** 2) * 0.5 * neg
-            jump_count -= 1
+            player.y -= (player.jump_count ** 2) * 0.5 * neg
+            player.jump_count -= 1
         else:
-            is_jump = False
-            jump_count = 10     
+            player.is_jump = False
+            player.jump_count = 10     
 
     redraw_game_window()                                      
     #replacing below code with redraw_game_window function:      
