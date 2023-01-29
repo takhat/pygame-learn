@@ -1,6 +1,7 @@
 import pygame  
 from player import Player
 from projectile import Projectile
+from enemy import Enemy
 
 pygame.init()                                                 #initializes pygame
 
@@ -22,10 +23,12 @@ def redraw_game_window():
     player.draw(win)
     for bullet in bullets:
         bullet.draw(win)
+    enemy.draw(win)
     pygame.display.update()
 
 #main loop: we use main loop to check for events etc.
 player=Player(x=300, y=410, width=64, height=64)
+enemy=Enemy(x=100, y=410, width=64, height=64, end=450)
 bullets=[]
 run = True
 while run:
