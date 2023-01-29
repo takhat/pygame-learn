@@ -1,4 +1,7 @@
 import pygame  
+from player import Player
+from projectile import Projectile
+
 pygame.init()                                                 #initializes pygame
 
 screen_width, screen_height = 500, 480
@@ -9,64 +12,21 @@ pygame.display.set_caption("First Game")                      #sets the caption 
 
 clock = pygame.time.Clock()
 
-walk_right=[pygame.image.load('assets/R1.png'),
-    pygame.image.load('assets/R2.png'),
-    pygame.image.load('assets/R3.png'),
-    pygame.image.load('assets/R4.png'),
-    pygame.image.load('assets/R5.png'),
-    pygame.image.load('assets/R6.png'),
-    pygame.image.load('assets/R7.png'),
-    pygame.image.load('assets/R8.png'),
-    pygame.image.load('assets/R9.png')]
-
-walk_left=[pygame.image.load('assets/L1.png'),
-    pygame.image.load('assets/L2.png'),
-    pygame.image.load('assets/L3.png'),
-    pygame.image.load('assets/L4.png'),
-    pygame.image.load('assets/L5.png'),
-    pygame.image.load('assets/L6.png'),
-    pygame.image.load('assets/L7.png'),
-    pygame.image.load('assets/L8.png'),
-    pygame.image.load('assets/L9.png')]   
-
 bg = pygame.image.load('assets/bg.jpg')
 
 char = pygame.image.load('assets/standing.png')
 
-class Player:
-    def __init__(self, x, y, width, height):
-        self.x=x             #character's x position
-        self.y=y             #character's y position
-        self.width=width     #character's width
-        self.height=height   #character's height
-        self.vel=5           #how fast the character moves
-        self.is_jump=False   #is the character jumping or not
-        self.jump_count=10   
-        self.left=False      #is the character is moving or not and in which direction. So display pic can be changed acc.
-        self.right=False     # "
-        self.walk_count=0    # how many steps has the character already moved
-    
-    def draw(self, win):
-        #animates the character:
-        if self.walk_count+1>=27:
-            self.walk_count=0
-        
-        if self.left:
-            win.blit(walk_left[self.walk_count//3],(self.x,self.y))
-            self.walk_count+=1
-        elif self.right:
-            win.blit(walk_right[self.walk_count//3],(self.x,self.y))
-            self.walk_count+=1
-        else:
-            win.blit(char, (self.x,self.y))
 
 def redraw_game_window():
     win.blit(bg,(0,0)) #sets a background image. args: 1. pic name, 2. tuple with position coordinates
     player.draw(win)
+    for bullet in bullets:
+        bullet.draw(win)
     pygame.display.update()
 
 #main loop: we use main loop to check for events etc.
 player=Player(x=300, y=410, width=64, height=64)
+bullets=[]
 run = True
 while run:
     #pygame.time.delay(100)              #100 ms=0.1 sec delay, so nothing happens too quickly
@@ -76,20 +36,35 @@ while run:
         if event.type==pygame.QUIT:     #such as mouse position moved, key presses, mouse clicks, etc.
             run=False
     
+    for bullet in bullets:
+        if bullet.x < screen_width and bullet.x > 0:    #if bullet is within the screen width
+            bullet.x += bullet.vel
+        else:                                           #if its outside screen width, delete the bullet
+            bullets.pop(bullets.index(bullet)) 
+    
     keys = pygame.key.get_pressed()                             #listens for key presses
-    if keys[pygame.K_LEFT] and player.x>player.vel:                    #left key press decreases x position by vel
+
+    if keys[pygame.K_SPACE]:                                    #space key press allows shooting bullets
+        if player.left:
+            facing=-1
+        else:
+            facing=1                                
+        if len(bullets)<5:
+            bullets.append(Projectile(round(player.x+player.width//2),round(player.y + player.height//2), 6, (0, 0, 0),facing))             
+    
+    if keys[pygame.K_LEFT] and player.x>player.vel:             #left key press decreases x position by vel
         player.x-=player.vel
         player.left=True
         player.right=False
+        player.standing=False
     elif keys[pygame.K_RIGHT] and player.x<screen_width-player.width-player.vel:       
-    #right key press increases x position by vel and
-        player.x+=player.vel  
+        player.x+=player.vel                                     #right key press increases x position by vel
         player.right=True
         player.left=False    
+        player.standing=False
     else:
-        player.left=False
-        player.right=False
-        player.walk_count=0                                            #prevents rectangle from moving out of screen     
+        player.standing=True
+        player.walk_count=0                                            
     if not player.is_jump:
         #As per game design, getting rid of the character's ability to move up and down, except to jump:
 
@@ -97,7 +72,7 @@ while run:
         #     y-=vel
         # if keys[pygame.K_DOWN] and y<screen_height-height-vel:  #down key press increases y position by vel and
         #     y+=vel  
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_UP]:                                     #Up key press makes the player jump
             player.is_jump = True
             player.left=False
             player.right=False
