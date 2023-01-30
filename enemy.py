@@ -34,6 +34,7 @@ class Enemy:
         self.walk_count=0
         self.vel=3
         self.path=[self.x, self.end]
+        self.hitbox=(self.x+17, self.y+2, 31, 57) #we can use rect for hitboxes for simplicity, hitboxes help with collisions
 
     def draw(self, win):
         self.move()         #every time we draw the character, we are going to move the character first
@@ -47,6 +48,8 @@ class Enemy:
         else:
             win.blit(self.walk_left[self.walk_count//3], (self.x, self.y))
             self.walk_count += 1
+        self.hitbox=(self.x+17, self.y+2, 31, 57)
+        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
 
     def move(self):
         if self.vel>0:                           #if +ve vel i.e. character is moving toward the right
@@ -61,4 +64,7 @@ class Enemy:
             else:
                 self.vel = self.vel *-1          #change vel to +ve  so character doesn't move past the left start pos
                 self.walk_count=0
+
+    def hit(self):
+        print("hit")
 
