@@ -59,6 +59,8 @@ class Player:
         # pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
 
     def hit(self, win, screen_width, screen_height): #when player collides with the enemy, player is moved to left side of the screen and score -= 5
+        self.is_jump=False
+        self.jump_count=10
         self.x = 60     
         self.y = 410
         self.walk_count=0

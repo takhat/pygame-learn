@@ -27,7 +27,7 @@ score = 0
 def redraw_game_window():
     win.blit(bg,(0,0)) #sets a background image. args: 1. pic name, 2. tuple with position coordinates
     text=font.render("Score: " + str(score), 1, (0, 0, 0)) #forming a string to render to screen
-    win.blit(text, (390,10))                               #rendering the string
+    win.blit(text, (350,10))                               #rendering the string
     player.draw(win)                 
     for bullet in bullets:
         bullet.draw(win)
@@ -47,12 +47,14 @@ run = True
 while run:
     #pygame.time.delay(100)              #100 ms=0.1 sec delay, so nothing happens too quickly
     clock.tick(27)                       #sets FPS(frames per sec) to 27
-    #if the player's y coord is within the top and the bottom of our enemy's rect's y coordinate
-    if player.hitbox[1] < enemy.hitbox[1] + enemy.hitbox[3] and player.hitbox[1] + player.hitbox[3] > enemy.hitbox[1]:
-        #if the player's x coord is within the enemy's rect's x coordinate
-        if player.hitbox[0] + player.hitbox[2] > enemy.hitbox[0] and player.hitbox[0] < enemy.hitbox[0] + enemy.hitbox[2]:
-            player.hit(win, screen_width, screen_height)
-            score-=5
+
+    if enemy.visible==True:
+        #if the player's y coord is within the top and the bottom of our enemy's rect's y coordinate
+        if player.hitbox[1] < enemy.hitbox[1] + enemy.hitbox[3] and player.hitbox[1] + player.hitbox[3] > enemy.hitbox[1]:
+            #if the player's x coord is within the enemy's rect's x coordinate
+            if player.hitbox[0] + player.hitbox[2] > enemy.hitbox[0] and player.hitbox[0] < enemy.hitbox[0] + enemy.hitbox[2]:
+                player.hit(win, screen_width, screen_height)
+                score-=5
     
     if shoot_loop>0:                     #when we shoot 1st time, shoot_loop =1 from 0
         shoot_loop+=1                    #when we shoot 2nd time, shoot_loop = 2 from 1, and no bullet
