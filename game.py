@@ -15,7 +15,12 @@ clock = pygame.time.Clock()
 
 bg = pygame.image.load('assets/bg.jpg')
 
-# char = pygame.image.load('assets/standing.png')
+bullet_sound = pygame.mixer.Sound('assets/bullet.mp3')
+hit_sound = pygame.mixer.Sound('assets/hit.mp3')
+music = pygame.mixer.music.load('assets/music.mp3')
+pygame.mixer.music.play(-1)   #continuously plays the music
+
+char = pygame.image.load('assets/standing.png')
 score = 0
 
 
@@ -42,6 +47,12 @@ run = True
 while run:
     #pygame.time.delay(100)              #100 ms=0.1 sec delay, so nothing happens too quickly
     clock.tick(27)                       #sets FPS(frames per sec) to 27
+    #if the player's y coord is within the top and the bottom of our enemy's rect's y coordinate
+    if player.hitbox[1] < enemy.hitbox[1] + enemy.hitbox[3] and player.hitbox[1] + player.hitbox[3] > enemy.hitbox[1]:
+        #if the player's x coord is within the enemy's rect's x coordinate
+        if player.hitbox[0] + player.hitbox[2] > enemy.hitbox[0] and player.hitbox[0] < enemy.hitbox[0] + enemy.hitbox[2]:
+            player.hit(win, screen_width, screen_height)
+            score-=5
     
     if shoot_loop>0:                     #when we shoot 1st time, shoot_loop =1 from 0
         shoot_loop+=1                    #when we shoot 2nd time, shoot_loop = 2 from 1, and no bullet
@@ -60,6 +71,7 @@ while run:
         if bullet.y-bullet.radius < enemy.hitbox[1] + enemy.hitbox[3] and bullet.y + bullet.radius > enemy.hitbox[1]:
              #if the bullet's x coord is within the enemy's rect's x coordinate
             if bullet.x + bullet.radius > enemy.hitbox[0] and bullet.x-bullet.radius < enemy.hitbox[0] + enemy.hitbox[2]:
+                hit_sound.play()
                 enemy.hit()
                 score+=1
                 bullets.pop(bullets.index(bullet))
@@ -72,6 +84,7 @@ while run:
     keys = pygame.key.get_pressed()                             #listens for key presses
 
     if keys[pygame.K_SPACE] and shoot_loop==0:                  #space key press allows shooting bullets
+        bullet_sound.play()
         if player.left:
             facing=-1
         else:

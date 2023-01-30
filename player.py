@@ -57,4 +57,22 @@ class Player:
         
         self.hitbox=(self.x+17, self.y+11, 29, 52)  #creates a hitbox as the player moves i.e. each time character is drawn
         # pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+
+    def hit(self, win, screen_width, screen_height): #when player collides with the enemy, player is moved to left side of the screen and score -= 5
+        self.x = 60     
+        self.y = 410
+        self.walk_count=0
+        font1 = pygame.font.SysFont("comicsans", 75)
+        text = font1.render('-5', 1, (255, 0, 0)) 
+        win.blit(text, (screen_width//2 - (text.get_width()//2), screen_height//2))
+        pygame.display.update()
+        i=0
+        while i<300:
+            pygame.time.delay(10) #0.1ms
+            i+=1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    i=301
+                    pygame.quit()
+        
         
