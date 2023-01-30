@@ -35,22 +35,30 @@ class Enemy:
         self.vel=3
         self.path=[self.x, self.end]
         self.hitbox=(self.x+17, self.y+2, 31, 57) #we can use rect for hitboxes for simplicity, hitboxes help with collisions
+        self.health=10
+        self.visible=True
 
     def draw(self, win):
         self.move()         #every time we draw the character, we are going to move the character first
-        if self.walk_count+1 >= 33:
-            self.walk_count=0
+        if self.visible:
+            if self.walk_count+1 >= 33:
+                self.walk_count=0
+            
+            if self.vel > 0:
+                win.blit(self.walk_right[self.walk_count//3], (self.x, self.y))
+                self.walk_count += 1
+            
+            else:
+                win.blit(self.walk_left[self.walk_count//3], (self.x, self.y))
+                self.walk_count += 1
+            
+            #green health bar:
+            pygame.draw.rect(win, (255,0, 0), (self.hitbox[0], self.hitbox[1]-20, 50, 10))
+            #red health bar:
+            pygame.draw.rect(win, (0,128, 0), (self.hitbox[0], self.hitbox[1]-20, 50-(5*(10-self.health)), 10))
+            self.hitbox=(self.x+17, self.y+2, 31, 57)
+            # pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         
-        if self.vel > 0:
-            win.blit(self.walk_right[self.walk_count//3], (self.x, self.y))
-            self.walk_count += 1
-        
-        else:
-            win.blit(self.walk_left[self.walk_count//3], (self.x, self.y))
-            self.walk_count += 1
-        self.hitbox=(self.x+17, self.y+2, 31, 57)
-        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
-
     def move(self):
         if self.vel>0:                           #if +ve vel i.e. character is moving toward the right
             if self.x + self.vel < self.path[1]: #if x coord + vel < end 
@@ -66,5 +74,9 @@ class Enemy:
                 self.walk_count=0
 
     def hit(self):
+        if self.health > 0:
+            self.health-=1
+        else:
+            self.visible=False
         print("hit")
 

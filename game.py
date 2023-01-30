@@ -15,18 +15,24 @@ clock = pygame.time.Clock()
 
 bg = pygame.image.load('assets/bg.jpg')
 
-char = pygame.image.load('assets/standing.png')
+# char = pygame.image.load('assets/standing.png')
+score = 0
 
 
 def redraw_game_window():
     win.blit(bg,(0,0)) #sets a background image. args: 1. pic name, 2. tuple with position coordinates
-    player.draw(win)
+    text=font.render("Score: " + str(score), 1, (0, 0, 0)) #forming a string to render to screen
+    win.blit(text, (390,10))                               #rendering the string
+    player.draw(win)                 
     for bullet in bullets:
         bullet.draw(win)
     enemy.draw(win)
     pygame.display.update()
 
 #main loop: we use main loop to check for events etc.
+
+font=pygame.font.SysFont('comicsans', 20, True)
+
 player=Player(x=300, y=410, width=64, height=64)
 enemy=Enemy(x=100, y=410, width=64, height=64, end=450)
 shoot_loop=0
@@ -55,6 +61,7 @@ while run:
              #if the bullet's x coord is within the enemy's rect's x coordinate
             if bullet.x + bullet.radius > enemy.hitbox[0] and bullet.x-bullet.radius < enemy.hitbox[0] + enemy.hitbox[2]:
                 enemy.hit()
+                score+=1
                 bullets.pop(bullets.index(bullet))
 
         if bullet.x < screen_width and bullet.x > 0:    #if bullet is within the screen width
@@ -64,7 +71,7 @@ while run:
     
     keys = pygame.key.get_pressed()                             #listens for key presses
 
-    if keys[pygame.K_SPACE] and shoot_loop==0:                                    #space key press allows shooting bullets
+    if keys[pygame.K_SPACE] and shoot_loop==0:                  #space key press allows shooting bullets
         if player.left:
             facing=-1
         else:
